@@ -1,0 +1,127 @@
+# Example Metric Definitions
+# Use these as a reference for defining your own semantic metrics
+
+metrics:
+  # Customer Engagement Metrics
+  - name: Active Users
+    description: Daily unique user logins, counting users who authenticate at least once per 24-hour period
+    calculation: |
+      SELECT COUNT(DISTINCT user_id)
+      FROM analytics.user_events
+      WHERE event_type = 'login'
+        AND event_date = CURRENT_DATE
+    owner: "@engagement-team"
+    tags: ["engagement", "daily", "key-metric"]
+    data_source: analytics.user_events
+    
+  - name: Weekly Active Users
+    description: Unique users who logged in at least once in the past 7 days
+    calculation: |
+      SELECT COUNT(DISTINCT user_id)
+      FROM analytics.user_events
+      WHERE event_type = 'login'
+        AND event_date >= CURRENT_DATE - INTERVAL '7 days'
+    owner: "@engagement-team"
+    tags: ["engagement", "weekly"]
+    data_source: analytics.user_events
+    
+  # Revenue Metrics
+  - name: Monthly Recurring Revenue
+    description: Sum of all recurring subscription revenue normalized to a monthly amount
+    calculation: |
+      SELECT SUM(
+        CASE 
+          WHEN billing_frequency = 'monthly' THEN amount
+          WHEN billing_frequency = 'annual' THEN amount / 12
+          WHEN billing_frequency = 'quarterly' THEN amount / 3
+          ELSE 0 
+        END
+      )
+      FROM subscriptions.active
+      WHERE status = 'active'
+    owner: "@revenue-team"
+    tags: ["revenue", "subscription", "monthly", "key-metric"]
+    data_source: subscriptions.active
+    
+  - name: Average Revenue Per User
+    description: Total revenue divided by total active users (monthly calculation)
+    calculation: |
+      SELECT 
+        SUM(revenue.total_amount) / COUNT(DISTINCT users.user_id)
+      FROM analytics.revenue_events revenue
+      JOIN analytics.user_events users 
+        ON revenue.user_id = users.user_id
+      WHERE revenue.event_date >= CURRENT_DATE - INTERVAL '30 days'
+        AND users.event_date >= CURRENT_DATE - INTERVAL '30 days'
+    owner: "@revenue-team"
+    tags: ["revenue", "per-user", "monthly"]
+    data_source: analytics.revenue_events
+    
+  # Product Usage Metrics
+  - name: Feature Adoption Rate
+    description: Percentage of users who have used a specific feature at least once
+    calculation: |
+      SELECT 
+        COUNT(DISTINCT CASE WHEN feature_events.feature_id = 'target_feature' THEN user_id END) * 100.0
+        / COUNT(DISTINCT user_events.user_id)
+      FROM analytics.user_events user_events
+      LEFT JOIN analytics.feature_events feature_events 
+        ON user_events.user_id = feature_events.user_id
+      WHERE user_events.event_date >= CURRENT_DATE - INTERVAL '30 days'
+    owner: "@product-team"
+    tags: ["product", "adoption", "monthly"]
+    data_source: analytics.feature_events
+    
+  # Customer Health Metrics
+  - name: Churn Rate
+    description: Percentage of customers who cancelled their subscription in the past month
+    calculation: |
+      SELECT 
+        COUNT(DISTINCT CASE WHEN cancel_date IS NOT NULL THEN customer_id END) * 100.0
+        / COUNT(DISTINCT customer_id)
+      FROM subscriptions.customers
+      WHERE subscription_start_date <= CURRENT_DATE - INTERVAL '30 days'
+    owner: "@customer-success-team"
+    tags: ["retention", "churn", "monthly", "key-metric"]
+    data_source: subscriptions.customers
+    
+  - name: Customer Lifetime Value
+    description: Predicted total revenue from a customer over their entire relationship
+    calculation: |
+      SELECT 
+        AVG(total_revenue) * AVG(tenure_months)
+      FROM (
+        SELECT 
+          customer_id,
+          SUM(amount) as total_revenue,
+          DATEDIFF('month', subscription_start_date, COALESCE(cancel_date, CURRENT_DATE)) as tenure_months
+        FROM subscriptions.transactions
+        GROUP BY customer_id, subscription_start_date, cancel_date
+      ) customer_metrics
+    owner: "@customer-success-team"
+    tags: ["revenue", "ltv", "predictive"]
+    data_source: subscriptions.transactions
+
+# Usage Examples:
+# 
+# 1. Define a new metric:
+#    define_metric(
+#        name="Active Users",
+#        description="Daily unique user logins...",
+#        calculation="SELECT COUNT(DISTINCT user_id)...",
+#        owner="@engagement-team",
+#        tags="engagement,daily,key-metric",
+#        data_source="analytics.user_events"
+#    )
+#
+# 2. Validate the metric:
+#    validate_metric("Active Users", "Verified counts match production dashboard")
+#
+# 3. Check trust score:
+#    check_trust_score("Active Users")
+#
+# 4. Visualize dependencies:
+#    visualize_lineage("Average Revenue Per User")
+#
+# 5. Export to dbt:
+#    export_to_dbt("Monthly Recurring Revenue")

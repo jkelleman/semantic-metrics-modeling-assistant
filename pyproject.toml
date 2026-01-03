@@ -1,0 +1,26 @@
+[project]
+name = "semantic-metrics-assistant"
+version = "0.1.0"
+description = "MCP agent for semantic metrics modeling with built-in trust indicators and observability"
+authors = [
+    {name = "Jen Kelleman", email = "jenkelleman@microsoft.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]>=1.1.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/jkelleman/semantics-metrics-modeling-assistant"
+Repository = "https://github.com/jkelleman/semantics-metrics-modeling-assistant"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+]
