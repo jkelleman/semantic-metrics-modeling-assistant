@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Semantic Metrics Modeling Assistant - MCP Server
 
@@ -21,6 +21,7 @@ from collections import defaultdict
 
 from mcp.server.fastmcp import FastMCP
 from mcp.server.fastmcp.prompts import base
+from semantic_metrics.trust_scoring import calculate_trust_score_enhanced, generate_sparkline, get_score_emoji, get_score_label
 
 # Create the FastMCP server
 mcp = FastMCP("semantic-metrics-assistant")
@@ -60,7 +61,7 @@ def define_metric(
     
     # Check if metric already exists
     if metric_id in METRICS_STORE:
-        return f"⚠️ Metric '{name}' already exists. Use update_metric() to modify it."
+        return f"âš ï¸ Metric '{name}' already exists. Use update_metric() to modify it."
     
     # Parse dependencies from calculation
     dependencies = _extract_dependencies(calculation)
@@ -93,38 +94,38 @@ def define_metric(
     trust_score = _calculate_trust_score(metric)
     
     report = f"""
-✅ Metric Created: {name}
+âœ… Metric Created: {name}
 
-📊 Definition:
+ðŸ“Š Definition:
 {description}
 
-🔢 Calculation:
+ðŸ”¢ Calculation:
 {calculation}
 
-👤 Owner: {owner or "⚠️ Unassigned - Please assign an owner"}
-🏷️ Tags: {', '.join(metric['tags']) if metric['tags'] else "None"}
-📍 Data Source: {data_source or "Not specified"}
+ðŸ‘¤ Owner: {owner or "âš ï¸ Unassigned - Please assign an owner"}
+ðŸ·ï¸ Tags: {', '.join(metric['tags']) if metric['tags'] else "None"}
+ðŸ“ Data Source: {data_source or "Not specified"}
 
-🛡️ Initial Trust Score: {trust_score}/100
+ðŸ›¡ï¸ Initial Trust Score: {trust_score}/100
 """
     
     if trust_score < 70:
-        report += "\n⚠️ Trust score is low. Consider:\n"
+        report += "\nâš ï¸ Trust score is low. Consider:\n"
         if not owner:
-            report += "  • Assigning an owner\n"
+            report += "  â€¢ Assigning an owner\n"
         if not metric['tags']:
-            report += "  • Adding relevant tags\n"
+            report += "  â€¢ Adding relevant tags\n"
         if not data_source:
-            report += "  • Specifying the data source\n"
-        report += "  • Adding tests with validate_metric()\n"
+            report += "  â€¢ Specifying the data source\n"
+        report += "  â€¢ Adding tests with validate_metric()\n"
     
     if dependencies:
-        report += f"\n🔗 Dependencies detected: {', '.join(dependencies)}\n"
+        report += f"\nðŸ”— Dependencies detected: {', '.join(dependencies)}\n"
     
-    report += f"\n💡 Next steps:\n"
-    report += f"  • Add tests: validate_metric('{name}')\n"
-    report += f"  • Check lineage: visualize_lineage('{name}')\n"
-    report += f"  • Export to dbt: export_to_dbt('{name}')\n"
+    report += f"\nðŸ’¡ Next steps:\n"
+    report += f"  â€¢ Add tests: validate_metric('{name}')\n"
+    report += f"  â€¢ Check lineage: visualize_lineage('{name}')\n"
+    report += f"  â€¢ Export to dbt: export_to_dbt('{name}')\n"
     
     return report
 
@@ -178,7 +179,7 @@ Search Results ({len(matches)} metrics found)
 """
     
     for metric, trust_score in matches:
-        trust_emoji = "🟢" if trust_score >= 80 else "🟡" if trust_score >= 60 else "🔴"
+        trust_emoji = "ðŸŸ¢" if trust_score >= 80 else "ðŸŸ¡" if trust_score >= 60 else "ðŸ”´"
         report += f"\n{trust_emoji} {metric['name']} (Trust: {trust_score}/100)\n"
         report += f"   {metric['description']}\n"
         report += f"   Owner: {metric['owner']}\n"
@@ -211,7 +212,7 @@ def check_trust_score(metric_name: str) -> str:
     
     if metric_id not in METRICS_STORE:
         similar = _find_similar_metrics(metric_name)
-        msg = f"❌ Metric '{metric_name}' not found."
+        msg = f"âŒ Metric '{metric_name}' not found."
         if similar:
             msg += f"\n\nDid you mean: {', '.join(similar)}?"
         return msg
@@ -237,39 +238,39 @@ Overall Trust Score: {overall_score}/100
 Detailed Breakdown:
 -------------------
 
-📅 Freshness: {freshness_score}/20
+ðŸ“… Freshness: {freshness_score}/20
 {_get_check_mark(freshness_score, 15)} Updated: {_format_relative_time(metric['updated_at'])}
 {_get_freshness_recommendation(freshness_score)}
 
-🧪 Test Coverage: {test_score}/25
+ðŸ§ª Test Coverage: {test_score}/25
 {_get_check_mark(test_score, 15)} Tests: {metric['test_count']} passing
 {_get_test_recommendation(test_score, metric['test_count'])}
 
-📊 Usage: {usage_score}/20
+ðŸ“Š Usage: {usage_score}/20
 {_get_check_mark(usage_score, 10)} Used {metric['usage_count']} times
 {_get_usage_recommendation(usage_score, metric['usage_count'])}
 
-📖 Documentation: {doc_score}/20
+ðŸ“– Documentation: {doc_score}/20
 {_get_check_mark(doc_score, 15)} Complete: {metric['documentation_complete']}
 {_get_doc_recommendation(doc_score, metric)}
 
-👤 Ownership: {ownership_score}/15
+ðŸ‘¤ Ownership: {ownership_score}/15
 {_get_check_mark(ownership_score, 10)} Owner: {metric['owner']}
 {_get_ownership_recommendation(ownership_score, metric['owner'])}
 
-💡 Recommendations:
+ðŸ’¡ Recommendations:
 """
     
     recommendations = _generate_recommendations(metric, overall_score)
     for rec in recommendations:
-        report += f"  • {rec}\n"
+        report += f"  â€¢ {rec}\n"
     
     if overall_score >= 80:
-        report += "\n🎉 Excellent! This metric is production-ready and trustworthy.\n"
+        report += "\nðŸŽ‰ Excellent! This metric is production-ready and trustworthy.\n"
     elif overall_score >= 60:
-        report += "\n👍 Good baseline. Address recommendations to increase trust.\n"
+        report += "\nðŸ‘ Good baseline. Address recommendations to increase trust.\n"
     else:
-        report += "\n⚠️ Low trust score. Prioritize improvements before widespread use.\n"
+        report += "\nâš ï¸ Low trust score. Prioritize improvements before widespread use.\n"
     
     return report
 
@@ -294,7 +295,7 @@ def visualize_lineage(metric_name: str, depth: int = 3) -> str:
     metric_id = metric_name.lower().replace(" ", "_")
     
     if metric_id not in METRICS_STORE:
-        return f"❌ Metric '{metric_name}' not found."
+        return f"âŒ Metric '{metric_name}' not found."
     
     metric = METRICS_STORE[metric_id]
     
@@ -302,7 +303,7 @@ def visualize_lineage(metric_name: str, depth: int = 3) -> str:
 Lineage for: {metric['name']}
 {'=' * 50}
 
-📊 This Metric:
+ðŸ“Š This Metric:
    {metric['description']}
    Data Source: {metric['data_source'] or 'Not specified'}
 
@@ -310,28 +311,28 @@ Lineage for: {metric['name']}
     
     # Show upstream dependencies
     if metric['dependencies']:
-        report += "⬆️ Upstream Dependencies (what this depends on):\n"
+        report += "â¬†ï¸ Upstream Dependencies (what this depends on):\n"
         report += _build_dependency_tree(metric['dependencies'], depth, "   ")
     else:
-        report += "⬆️ Upstream Dependencies: None (base metric)\n"
+        report += "â¬†ï¸ Upstream Dependencies: None (base metric)\n"
     
     # Show downstream dependents
-    report += "\n⬇️ Downstream Dependents (what depends on this):\n"
+    report += "\nâ¬‡ï¸ Downstream Dependents (what depends on this):\n"
     downstream = [m for m, deps in LINEAGE_GRAPH.items() if metric_id in deps]
     if downstream:
         for dep in downstream:
             if dep in METRICS_STORE:
-                report += f"   └── {METRICS_STORE[dep]['name']}\n"
+                report += f"   â””â”€â”€ {METRICS_STORE[dep]['name']}\n"
     else:
         report += "   None (no metrics depend on this yet)\n"
     
     # Impact analysis
-    report += f"\n🎯 Impact Analysis:\n"
+    report += f"\nðŸŽ¯ Impact Analysis:\n"
     report += f"   Direct dependencies: {len(metric['dependencies'])}\n"
     report += f"   Direct dependents: {len(downstream)}\n"
     
     if len(downstream) > 0:
-        report += f"\n⚠️ Caution: Changes to this metric will affect {len(downstream)} downstream metric(s)\n"
+        report += f"\nâš ï¸ Caution: Changes to this metric will affect {len(downstream)} downstream metric(s)\n"
     
     return report
 
@@ -357,7 +358,7 @@ def validate_metric(metric_name: str, test_description: str = "") -> str:
     metric_id = metric_name.lower().replace(" ", "_")
     
     if metric_id not in METRICS_STORE:
-        return f"❌ Metric '{metric_name}' not found."
+        return f"âŒ Metric '{metric_name}' not found."
     
     metric = METRICS_STORE[metric_id]
     
@@ -366,24 +367,24 @@ def validate_metric(metric_name: str, test_description: str = "") -> str:
     
     # Check SQL syntax (basic)
     if "SELECT" not in metric['calculation'].upper():
-        warnings.append("⚠️ Calculation doesn't appear to be SQL - ensure format is correct")
+        warnings.append("âš ï¸ Calculation doesn't appear to be SQL - ensure format is correct")
     
     # Check dependencies exist
     for dep in metric['dependencies']:
         if dep not in METRICS_STORE and not _is_table_reference(dep):
-            issues.append(f"❌ Dependency '{dep}' not found - define it first or verify table name")
+            issues.append(f"âŒ Dependency '{dep}' not found - define it first or verify table name")
     
     # Check for circular dependencies
     if _has_circular_dependency(metric_id):
-        issues.append(f"❌ Circular dependency detected!")
+        issues.append(f"âŒ Circular dependency detected!")
     
     # Check ownership
     if metric['owner'] == "Unassigned":
-        warnings.append("⚠️ No owner assigned")
+        warnings.append("âš ï¸ No owner assigned")
     
     # Check documentation
     if not metric['data_source']:
-        warnings.append("⚠️ Data source not specified")
+        warnings.append("âš ï¸ Data source not specified")
     
     # Add test if description provided
     if test_description:
@@ -401,32 +402,32 @@ Validation Report: {metric['name']}
 """
     
     if not issues:
-        report += "✅ All validation checks passed!\n\n"
+        report += "âœ… All validation checks passed!\n\n"
     else:
-        report += f"❌ {len(issues)} issue(s) found:\n"
+        report += f"âŒ {len(issues)} issue(s) found:\n"
         for issue in issues:
             report += f"   {issue}\n"
         report += "\n"
     
     if warnings:
-        report += f"⚠️ {len(warnings)} warning(s):\n"
+        report += f"âš ï¸ {len(warnings)} warning(s):\n"
         for warning in warnings:
             report += f"   {warning}\n"
         report += "\n"
     
     if test_description:
-        report += f"🧪 Test Added:\n"
+        report += f"ðŸ§ª Test Added:\n"
         report += f"   {test_description}\n"
         report += f"   Total tests: {metric['test_count']}\n\n"
     
-    report += f"🛡️ Trust Score: {old_trust}/100 → {new_trust}/100 "
+    report += f"ðŸ›¡ï¸ Trust Score: {old_trust}/100 â†’ {new_trust}/100 "
     if new_trust > old_trust:
-        report += f"(+{new_trust - old_trust}) 📈\n"
+        report += f"(+{new_trust - old_trust}) ðŸ“ˆ\n"
     else:
         report += "\n"
     
     if not issues and not warnings:
-        report += "\n✨ Metric is validated and ready to use!\n"
+        report += "\nâœ¨ Metric is validated and ready to use!\n"
     
     return report
 
@@ -452,9 +453,9 @@ def compare_metrics(metric1_name: str, metric2_name: str) -> str:
     metric2_id = metric2_name.lower().replace(" ", "_")
     
     if metric1_id not in METRICS_STORE:
-        return f"❌ Metric '{metric1_name}' not found."
+        return f"âŒ Metric '{metric1_name}' not found."
     if metric2_id not in METRICS_STORE:
-        return f"❌ Metric '{metric2_name}' not found."
+        return f"âŒ Metric '{metric2_name}' not found."
     
     m1 = METRICS_STORE[metric1_id]
     m2 = METRICS_STORE[metric2_id]
@@ -469,47 +470,47 @@ Metric Comparison
 {m1['name']} vs {m2['name']}
 
 Description:
-  1️⃣ {m1['description']}
-  2️⃣ {m2['description']}
+  1ï¸âƒ£ {m1['description']}
+  2ï¸âƒ£ {m2['description']}
 
 Calculation:
-  1️⃣ {m1['calculation']}
-  2️⃣ {m2['calculation']}
+  1ï¸âƒ£ {m1['calculation']}
+  2ï¸âƒ£ {m2['calculation']}
 
 Owner:
-  1️⃣ {m1['owner']}
-  2️⃣ {m2['owner']}
+  1ï¸âƒ£ {m1['owner']}
+  2ï¸âƒ£ {m2['owner']}
 
 Trust Score:
-  1️⃣ {trust1}/100 {_get_score_emoji(trust1)}
-  2️⃣ {trust2}/100 {_get_score_emoji(trust2)}
+  1ï¸âƒ£ {trust1}/100 {_get_score_emoji(trust1)}
+  2ï¸âƒ£ {trust2}/100 {_get_score_emoji(trust2)}
 
 Usage:
-  1️⃣ {m1['usage_count']} times
-  2️⃣ {m2['usage_count']} times
+  1ï¸âƒ£ {m1['usage_count']} times
+  2ï¸âƒ£ {m2['usage_count']} times
 
 Data Source:
-  1️⃣ {m1['data_source'] or 'Not specified'}
-  2️⃣ {m2['data_source'] or 'Not specified'}
+  1ï¸âƒ£ {m1['data_source'] or 'Not specified'}
+  2ï¸âƒ£ {m2['data_source'] or 'Not specified'}
 
 """
     
     # Recommendation
     if trust1 > trust2 + 10:
-        report += f"💡 Recommendation: '{m1['name']}' has higher trust - prefer using it\n"
+        report += f"ðŸ’¡ Recommendation: '{m1['name']}' has higher trust - prefer using it\n"
     elif trust2 > trust1 + 10:
-        report += f"💡 Recommendation: '{m2['name']}' has higher trust - prefer using it\n"
+        report += f"ðŸ’¡ Recommendation: '{m2['name']}' has higher trust - prefer using it\n"
     elif m1['usage_count'] > m2['usage_count'] * 2:
-        report += f"💡 Recommendation: '{m1['name']}' is more widely used\n"
+        report += f"ðŸ’¡ Recommendation: '{m1['name']}' is more widely used\n"
     elif m2['usage_count'] > m1['usage_count'] * 2:
-        report += f"💡 Recommendation: '{m2['name']}' is more widely used\n"
+        report += f"ðŸ’¡ Recommendation: '{m2['name']}' is more widely used\n"
     else:
-        report += "💡 Both metrics appear similar - review calculations to choose\n"
+        report += "ðŸ’¡ Both metrics appear similar - review calculations to choose\n"
     
     # Check for potential duplicates
     similarity = _calculate_similarity(m1, m2)
     if similarity > 0.7:
-        report += f"\n⚠️ Warning: These metrics appear very similar ({int(similarity*100)}% match)\n"
+        report += f"\nâš ï¸ Warning: These metrics appear very similar ({int(similarity*100)}% match)\n"
         report += "Consider consolidating them to reduce metric sprawl.\n"
     
     return report
@@ -529,7 +530,7 @@ def export_to_dbt(metric_name: str) -> str:
     metric_id = metric_name.lower().replace(" ", "_")
     
     if metric_id not in METRICS_STORE:
-        return f"❌ Metric '{metric_name}' not found."
+        return f"âŒ Metric '{metric_name}' not found."
     
     metric = METRICS_STORE[metric_id]
     
@@ -563,19 +564,19 @@ metrics:
 """
     
     report = f"""
-✅ dbt Export for: {metric['name']}
+âœ… dbt Export for: {metric['name']}
 {'=' * 50}
 
 ```yaml{yaml_output}
 ```
 
-💡 Next steps:
+ðŸ’¡ Next steps:
 1. Copy the YAML above to your dbt project
 2. Place in: models/metrics/{metric_id}.yml
 3. Run: dbt compile
 4. Run: dbt run --select {metric_id}
 
-📚 dbt documentation:
+ðŸ“š dbt documentation:
 https://docs.getdbt.com/docs/build/metrics
 """
     
@@ -671,11 +672,11 @@ def _check_ownership(metric: Dict) -> int:
 def _get_score_emoji(score: int) -> str:
     """Get emoji for score."""
     if score >= 80:
-        return "🟢"
+        return "ðŸŸ¢"
     elif score >= 60:
-        return "🟡"
+        return "ðŸŸ¡"
     else:
-        return "🔴"
+        return "ðŸ”´"
 
 
 def _get_score_label(score: int) -> str:
@@ -690,7 +691,7 @@ def _get_score_label(score: int) -> str:
 
 def _get_check_mark(score: int, threshold: int) -> str:
     """Get check or warning mark."""
-    return "✅" if score >= threshold else "⚠️"
+    return "âœ…" if score >= threshold else "âš ï¸"
 
 
 def _format_relative_time(iso_time: str) -> str:
@@ -715,7 +716,7 @@ def _get_freshness_recommendation(score: int) -> str:
     if score >= 15:
         return ""
     else:
-        return "⚠️ Consider updating - metrics should be reviewed regularly"
+        return "âš ï¸ Consider updating - metrics should be reviewed regularly"
 
 
 def _get_test_recommendation(score: int, test_count: int) -> str:
@@ -723,17 +724,17 @@ def _get_test_recommendation(score: int, test_count: int) -> str:
     if score >= 20:
         return ""
     elif test_count == 0:
-        return "❗ Add validation tests to verify metric accuracy"
+        return "â— Add validation tests to verify metric accuracy"
     else:
-        return "⚠️ Add more tests for comprehensive coverage"
+        return "âš ï¸ Add more tests for comprehensive coverage"
 
 
 def _get_usage_recommendation(score: int, usage: int) -> str:
     """Get recommendation for usage."""
     if usage == 0:
-        return "ℹ️ New metric - promote to increase adoption"
+        return "â„¹ï¸ New metric - promote to increase adoption"
     elif score < 10:
-        return "ℹ️ Low usage - ensure metric is discoverable"
+        return "â„¹ï¸ Low usage - ensure metric is discoverable"
     else:
         return ""
 
@@ -748,14 +749,14 @@ def _get_doc_recommendation(score: int, metric: Dict) -> str:
     if not metric['tags']:
         missing.append("tags")
     if missing:
-        return f"⚠️ Add: {', '.join(missing)}"
+        return f"âš ï¸ Add: {', '.join(missing)}"
     return ""
 
 
 def _get_ownership_recommendation(score: int, owner: str) -> str:
     """Get recommendation for ownership."""
     if owner == "Unassigned":
-        return "❗ Assign an owner for governance"
+        return "â— Assign an owner for governance"
     return ""
 
 
@@ -803,7 +804,7 @@ def _build_dependency_tree(deps: List[str], depth: int, indent: str) -> str:
     
     tree = ""
     for dep in deps:
-        tree += f"{indent}└── {dep}\n"
+        tree += f"{indent}â””â”€â”€ {dep}\n"
         if dep in METRICS_STORE:
             sub_deps = METRICS_STORE[dep]['dependencies']
             tree += _build_dependency_tree(sub_deps, depth - 1, indent + "    ")
@@ -859,6 +860,319 @@ def _calculate_similarity(m1: Dict, m2: Dict) -> float:
     return score
 
 
+
+
+@mcp.tool()
+def export_to_looker(metric_name: str, view_name: str, explore: str = "") -> str:
+    """
+    Export metric definition to Looker LookML format.
+    
+    Args:
+        metric_name: Name of the metric to export
+        view_name: Looker view name to attach the measure to
+        explore: Optional explore name for context
+        
+    Returns:
+        LookML formatted string ready to paste into Looker
+    """
+    from semantic_metrics.exporters import generate_lookml
+    
+    metric_id = metric_name.lower().replace(" ", "_")
+    
+    if metric_id not in METRICS_STORE:
+        return f" Metric ''{metric_name}'' not found."
+    
+    metric = METRICS_STORE[metric_id]
+    lookml = generate_lookml(metric, view_name, explore if explore else None)
+    
+    report = f"""
+ Looker LookML Export for: {metric[''name'']}
+{''='' * 50}
+
+```lookml
+{lookml}
+```
+
+ Next steps:
+1. Copy the LookML above
+2. Paste into your Looker project view file
+3. Validate syntax in Looker IDE
+4. Deploy to production
+
+ Trust Score: {_calculate_trust_score(metric)}/100
+{''ℹ '' if metric[''owner''] else '' Assign an owner before deploying''}
+"""
+    
+    return report
+
+
+@mcp.tool()
+def export_to_tableau(metric_name: str, connection: str) -> str:
+    """
+    Export metric definition to Tableau TDS format.
+    
+    Args:
+        metric_name: Name of the metric to export
+        connection: Tableau connection name
+        
+    Returns:
+        TDS XML string ready to import into Tableau
+    """
+    from semantic_metrics.exporters import generate_tds
+    
+    metric_id = metric_name.lower().replace(" ", "_")
+    
+    if metric_id not in METRICS_STORE:
+        return f" Metric ''{metric_name}'' not found."
+    
+    metric = METRICS_STORE[metric_id]
+    tds = generate_tds(metric, connection)
+    
+    report = f"""
+ Tableau TDS Export for: {metric[''name'']}
+{''='' * 50}
+
+```xml
+{tds}
+```
+
+ Next steps:
+1. Save the TDS XML above to a .tds file
+2. Open Tableau Desktop
+3. Data  Connect to Data  More  Other Files (TDS)
+4. Select your saved .tds file
+
+ Trust Score: {_calculate_trust_score(metric)}/100
+{''ℹ '' if metric[''owner''] else '' Assign an owner before sharing''}
+"""
+    
+    return report
+
+
+
+
+
+@mcp.tool()
+def calculate_trust_score_enhanced_tool(metric_name: str, show_history: bool = False) -> str:
+    """
+    Calculate enhanced trust score with weighted factors, trends, and recommendations.
+    
+    Uses improved algorithm with:
+    - Weighted scoring (tests=35%, usage=20%, freshness/docs/ownership=15% each)
+    - Time-decay for stale metrics
+    - Trend analysis from history
+    - Detailed recommendations
+    
+    Args:
+        metric_name: Name of the metric
+        show_history: Whether to show 90-day trend sparkline
+        
+    Returns:
+        Trust score with breakdown, trend, multipliers, and actionable recommendations
+    """
+    from semantic_metrics.database import MetricsDatabase
+    
+    metric_id = metric_name.lower().replace(" ", "_")
+    
+    if metric_id not in METRICS_STORE:
+        return f" Metric ''{metric_name}'' not found."
+    
+    metric = METRICS_STORE[metric_id]
+    
+    # Get database for history
+    db = MetricsDatabase()
+    history = db.get_metric_history(metric_id, limit=30)
+    
+    # Calculate enhanced score
+    score_data = calculate_trust_score_enhanced(metric, history)
+    
+    # Build report
+    report = f"""
+ Enhanced Trust Score for: {metric[''name'']}
+{''='' * 60}
+
+Overall Score: {get_score_emoji(score_data[''score''])} {score_data[''score'']}/100 {score_data[''trend'']}
+Grade: {get_score_label(score_data[''score''])}
+
+ Factor Breakdown (Weighted):
+   Tests:         {score_data[''breakdown''][''tests'']}/35  (35% weight - MOST IMPORTANT)
+   Usage:         {score_data[''breakdown''][''usage'']}/20  (20% weight)
+   Freshness:     {score_data[''breakdown''][''freshness'']}/15  (15% weight)
+   Documentation: {score_data[''breakdown''][''documentation'']}/15  (15% weight)
+   Ownership:     {score_data[''breakdown''][''ownership'']}/15  (15% weight)
+
+ Multipliers Applied:
+  Recent Activity: {score_data[''multipliers''][''recent_activity'']:+.0f} points
+  Consistency:     {score_data[''multipliers''][''consistency'']:+.0f} points
+  Time Decay:      {score_data[''multipliers''][''time_decay'']:.1f} points
+"""
+    
+    # Show history if requested
+    if show_history:
+        trust_history = db.get_trust_score_history(metric_id, days=90)
+        if trust_history and len(trust_history) >= 2:
+            scores = [h[''score''] for h in trust_history]
+            report += f"""
+ Trust Score Trend (90 days):
+  {generate_sparkline(scores[:30])}
+  Current: {scores[0]:.1f} | 30d ago: {scores[min(30, len(scores)-1)]:.1f} | 90d ago: {scores[-1]:.1f}
+  Change: {(scores[0] - scores[-1]):+.1f} points
+"""
+        else:
+            report += "\n Trust Score Trend: Not enough history data yet\n"
+    
+    # Add recommendations
+    if score_data[''recommendations'']:
+        report += "\n Recommendations:\n"
+        for rec in score_data[''recommendations'']:
+            report += f"  {rec}\n"
+    
+    # Record this score
+    db.record_trust_score(metric_id, score_data[''score''], score_data[''breakdown''])
+    db.close()
+    
+    return report
+
+
+
+
+
+@mcp.tool()
+def generate_mermaid_diagram(metric_name: str, depth: int = 3, include_downstream: bool = False) -> str:
+    """
+    Generate Mermaid flowchart diagram showing metric dependencies and lineage.
+    
+    Creates beautiful, interactive diagrams that render in GitHub, Notion, Confluence, and other markdown tools.
+    
+    Args:
+        metric_name: Name of the metric to visualize
+        depth: How many dependency levels to traverse (default: 3)
+        include_downstream: Also show metrics that depend on this one
+        
+    Returns:
+        Mermaid diagram syntax ready to render in markdown
+    """
+    metric_id = metric_name.lower().replace(" ", "_")
+    
+    if metric_id not in METRICS_STORE:
+        return f" Metric ''{metric_name}'' not found."
+    
+    metric = METRICS_STORE[metric_id]
+    
+    # Build dependency graph
+    nodes = {}
+    edges = []
+    visited = set()
+    
+    def add_dependencies(mid, current_depth):
+        if current_depth > depth or mid in visited:
+            return
+        visited.add(mid)
+        
+        if mid in METRICS_STORE:
+            m = METRICS_STORE[mid]
+            # Create sanitized node ID
+            node_id = mid.replace(" ", "_").replace("-", "_")
+            nodes[node_id] = {
+                ''label'': m[''name''],
+                ''type'': ''metric'',
+                ''is_root'': mid == metric_id
+            }
+            
+            # Add edges for dependencies
+            for dep in m.get(''dependencies'', []):
+                dep_id = dep.replace(" ", "_").replace("-", "_").split(''.'')[0]
+                
+                # Determine if dependency is a table or metric
+                if dep_id in METRICS_STORE:
+                    nodes[dep_id] = {
+                        ''label'': METRICS_STORE[dep_id][''name''],
+                        ''type'': ''metric'',
+                        ''is_root'': False
+                    }
+                else:
+                    # It''s a table/external source
+                    nodes[dep_id] = {
+                        ''label'': dep,
+                        ''type'': ''table'',
+                        ''is_root'': False
+                    }
+                
+                edges.append((node_id, dep_id))
+                
+                # Recurse for metrics only
+                if dep_id in METRICS_STORE:
+                    add_dependencies(dep_id, current_depth + 1)
+    
+    # Build upstream dependencies
+    add_dependencies(metric_id, 0)
+    
+    # Build downstream dependencies if requested
+    if include_downstream:
+        for mid, m in METRICS_STORE.items():
+            if metric_id in m.get(''dependencies'', []) or metric[''name''] in m.get(''dependencies'', []):
+                node_id = mid.replace(" ", "_").replace("-", "_")
+                nodes[node_id] = {
+                    ''label'': m[''name''],
+                    ''type'': ''metric'',
+                    ''is_root'': False
+                }
+                edges.append((node_id, metric_id.replace(" ", "_").replace("-", "_")))
+    
+    # Generate Mermaid syntax
+    mermaid = "```mermaid\ngraph TD\n"
+    
+    # Add nodes with labels
+    for node_id, node_data in nodes.items():
+        label = node_data[''label'']
+        if node_data[''type''] == ''table'':
+            mermaid += f"    {node_id}[({label})]\n"  # Cylinder for tables
+        else:
+            mermaid += f"    {node_id}[{label}]\n"
+    
+    # Add edges
+    for source, target in edges:
+        mermaid += f"    {source} --> {target}\n"
+    
+    # Add styling
+    mermaid += "\n    %% Styling\n"
+    for node_id, node_data in nodes.items():
+        if node_data[''is_root'']:
+            mermaid += f"    style {node_id} fill:#4CAF50,color:#fff\n"  # Green for root
+        elif node_data[''type''] == ''metric'':
+            mermaid += f"    style {node_id} fill:#2196F3,color:#fff\n"  # Blue for metrics
+        else:
+            mermaid += f"    style {node_id} fill:#9E9E9E,color:#fff\n"  # Gray for tables
+    
+    mermaid += "```\n"
+    
+    report = f"""
+ Dependency Diagram for: {metric[''name'']}
+{''='' * 60}
+
+{mermaid}
+
+ How to use:
+1. Copy the Mermaid diagram above
+2. Paste into:
+   - GitHub README.md or issues
+   - Notion pages
+   - Confluence
+   - VS Code with Mermaid preview
+   - Any markdown renderer with Mermaid support
+
+ Legend:
+   Green = Target metric
+   Blue = Dependent metrics
+   Gray = Tables/Data sources
+
+ Depth: {depth} levels | Nodes: {len(nodes)} | Edges: {len(edges)}
+"""
+    
+    return report
+
+
+
 @mcp.prompt()
 def metric_definition_guide() -> str:
     """
@@ -872,16 +1186,16 @@ def metric_definition_guide() -> str:
 ## Best Practices
 
 ### 1. Clear Naming
-✅ Good: "Active Users", "Revenue per Customer", "Churn Rate"
-❌ Bad: "metric_1", "users_v2", "the_thing"
+âœ… Good: "Active Users", "Revenue per Customer", "Churn Rate"
+âŒ Bad: "metric_1", "users_v2", "the_thing"
 
 ### 2. Descriptive Explanations
-✅ Good: "Daily unique user logins, counting users who authenticate at least once per 24-hour period"
-❌ Bad: "User count"
+âœ… Good: "Daily unique user logins, counting users who authenticate at least once per 24-hour period"
+âŒ Bad: "User count"
 
 ### 3. Explicit Calculations
-✅ Good: "COUNT(DISTINCT user_id) WHERE login_date = CURRENT_DATE"
-❌ Bad: "count users today"
+âœ… Good: "COUNT(DISTINCT user_id) WHERE login_date = CURRENT_DATE"
+âŒ Bad: "count users today"
 
 ### 4. Assign Ownership
 Always specify who's responsible: "@data-team", "@analytics", "@product"
@@ -910,11 +1224,11 @@ Data Source: subscriptions.active
 ## Trust Indicators
 
 Metrics with high trust scores have:
-- ✅ 3+ validation tests
-- ✅ Clear ownership
-- ✅ Complete documentation
-- ✅ Regular usage (10+ times)
-- ✅ Recent updates (< 30 days)
+- âœ… 3+ validation tests
+- âœ… Clear ownership
+- âœ… Complete documentation
+- âœ… Regular usage (10+ times)
+- âœ… Recent updates (< 30 days)
 
 Use validate_metric() to add tests and increase trust.
 """
@@ -941,3 +1255,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
