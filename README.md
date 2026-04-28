@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/jkelleman-semantic-metrics-modeling-assistant-badge.png)](https://mseep.ai/app/jkelleman-semantic-metrics-modeling-assistant)
+
 # Semantic Metrics Modeling Assistant
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
