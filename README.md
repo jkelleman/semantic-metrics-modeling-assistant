@@ -16,13 +16,13 @@ The Semantic Metrics Modeling Assistant is a Model Context Protocol (MCP) agent 
 
 ## Key Features
 
-### 🗄️ Enterprise Data Persistence
+### Enterprise Data Persistence
 - **SQLite Database** - Persistent storage with full audit trails
 - **5-Table Schema** - Metrics, history, tests, usage, and trust scores
 - **Change Tracking** - Complete history of all metric modifications
 - **Version Control Ready** - Designed for Git integration and rollback
 
-### 💬 Conversational Metric Definition
+### Conversational Metric Definition
 Define metrics naturally through conversation:
 ```
 "Define 'Active Users' as daily unique logins"
@@ -30,13 +30,13 @@ Define metrics naturally through conversation:
 "What's the definition of our churn rate metric?"
 ```
 
-### 📊 BI Tool Integrations
+### BI Tool Integrations
 Export metrics to industry-standard platforms:
 - **Looker (LookML)** - Generate production-ready LookML files
 - **Tableau (TDS)** - Export as Tableau Data Source XML
 - **dbt** - Create dbt metric YAML definitions
 
-### 🎯 Enhanced Trust Scoring
+### Enhanced Trust Scoring
 Sophisticated quality assessment with weighted algorithms:
 - **Tests** (35% weight) - Validation test coverage and pass rates
 - **Usage** (20% weight) - Adoption across teams and dashboards
@@ -45,14 +45,14 @@ Sophisticated quality assessment with weighted algorithms:
 - **Ownership** (15% weight) - Clear accountability
 - **Trend Analysis** - Track quality changes over time with sparklines
 
-### 🎨 Visual Lineage & Dependencies
+### Visual Lineage & Dependencies
 Modern visualization options for understanding metric relationships:
 - **Mermaid Diagrams** - Beautiful flowcharts for GitHub/Notion/Confluence
 - **ASCII Trees** - Terminal-friendly dependency visualization
 - **Impact Analysis** - Understand downstream effects before changes
 - **Circular Dependency Detection** - Identify and resolve conflicts
 
-### ✅ Comprehensive Testing
+### Comprehensive Testing
 Production-ready test coverage:
 - **35+ Tests** - Database, trust scoring, exporters, and tools
 - **pytest Framework** - Industry-standard testing with fixtures
@@ -350,7 +350,7 @@ See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) for complete technica
 ## About
 
 **Jen Kelleman**  
-Staff Product Designer
+Staff Content Design Engineer
 
 I design AI and data experiences that reduce cognitive load and build trust through transparent, well-instrumented systems.
 
