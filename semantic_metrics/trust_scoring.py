@@ -202,10 +202,10 @@ def calculate_trend(history: List[Dict]) -> str:
     
     # Count recent vs older activity as proxy for metric health
     now = datetime.now()
-    recent_changes = len([h for h in history if 
-        (now - datetime.fromisoformat(h['changed_at'])).days <= 30])
-    older_changes = len([h for h in history if 
-        30 < (now - datetime.fromisoformat(h['changed_at'])).days <= 60])
+    # Half-open windows, so a change exactly 30 days old counts once: [0, 30) and [30, 60).
+    ages = [(now - datetime.fromisoformat(h['changed_at'])).days for h in history]
+    recent_changes = len([a for a in ages if a < 30])
+    older_changes = len([a for a in ages if 30 <= a < 60])
     
     if recent_changes > older_changes + 2:
         return "↗️"  # Improving - more recent activity

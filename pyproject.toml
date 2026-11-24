@@ -8,12 +8,15 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "mcp[cli]>=1.1.2",
+    "mcp[cli]>=1.1.2,<2",
 ]
 
 [project.urls]
-Homepage = "https://github.com/jkelleman/semantics-metrics-modeling-assistant"
-Repository = "https://github.com/jkelleman/semantics-metrics-modeling-assistant"
+Homepage = "https://github.com/jkelleman/semantic-metrics-modeling-assistant"
+Repository = "https://github.com/jkelleman/semantic-metrics-modeling-assistant"
+
+[tool.hatch.build.targets.wheel]
+packages = ["semantic_metrics"]
 
 [build-system]
 requires = ["hatchling"]

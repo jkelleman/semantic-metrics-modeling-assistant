@@ -4,11 +4,11 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-1.0-green.svg)](https://modelcontextprotocol.io)
-[![FastMCP](https://img.shields.io/badge/FastMCP-latest-orange.svg)](https://github.com/jlowin/fastmcp)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-35%2B%20passing-success.svg)](https://github.com/jkelleman/semantic-metrics-modeling-assistant)
+[![MCP Python SDK 1.x](https://img.shields.io/badge/MCP%20Python%20SDK-1.x-orange.svg)](https://github.com/modelcontextprotocol/python-sdk)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI](https://github.com/jkelleman/semantic-metrics-modeling-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/jkelleman/semantic-metrics-modeling-assistant/actions/workflows/ci.yml)
 
-**A production-ready MCP agent that helps data teams define, validate, and visualize semantic metrics with enterprise-grade persistence, trust scoring, and BI integrations.**
+**An MCP agent that helps data teams define, validate, and visualize semantic metrics with enterprise-grade persistence, trust scoring, and BI integrations.**
 
 ---
 
@@ -55,11 +55,10 @@ Modern visualization options for understanding metric relationships:
 - **Circular Dependency Detection** - Identify and resolve conflicts
 
 ### Comprehensive Testing
-Production-ready test coverage:
-- **35+ Tests** - Database, trust scoring, exporters, and tools
+Test coverage for the core logic:
+- **34 Tests** - The SQLite database layer and trust scoring
 - **pytest Framework** - Industry-standard testing with fixtures
-- **90%+ Coverage** - Core functionality thoroughly validated
-- **CI/CD Ready** - Automated testing for continuous integration
+- **CI** - Tests run on every push with GitHub Actions
 
 ## Why This Matters
 
@@ -258,9 +257,9 @@ Design interfaces that make governance the path of least resistance. Use prompts
 ## Technical Stack
 
 - **Python 3.10+** - Core language
-- **FastMCP** - MCP protocol implementation  
+- **MCP Python SDK (FastMCP)** - MCP protocol implementation  
 - **SQLite** - Persistent database storage
-- **pytest** - Test framework with 35+ tests
+- **pytest** - Test framework with 34 tests
 - **YAML/JSON** - Metric definitions and exports
 - **Mermaid** - Modern diagram generation
 
@@ -316,7 +315,7 @@ Design interfaces that make governance the path of least resistance. Use prompts
 - **Database Design** - SQLite persistence with 5-table schema and full audit trails
 - **Data Modeling** - Semantic layer design patterns and metric definition frameworks
 - **System Architecture** - Governance automation and observability instrumentation
-- **Testing** - 35+ tests with pytest, 90%+ coverage on core functionality
+- **Testing** - 34 pytest tests covering the database and trust scoring, run in CI
 - **Integration Patterns** - BI tool exporters for Looker, Tableau, and dbt
 
 ### Domain Expertise
@@ -333,7 +332,7 @@ As a **Principal Content Designer at Microsoft** working with data and AI system
 2. **UX for technical users** - Designing abstraction layers that preserve system power while reducing cognitive overhead
 3. **Design for trust and observability** - Applying enterprise-grade governance patterns through transparent quality instrumentation with weighted scoring
 4. **AI-augmented workflows** - Leveraging MCP to enhance (not replace) human decision-making and domain expertise
-5. **Production-ready implementation** - 35+ tests, database persistence, and BI integrations ready for real-world deployment
+5. **Working implementation** - 34 tests, database persistence, and BI exports
 
 This represents the kind of human-centered design that enterprise data platforms need: governance that's frictionless, trust that's measurable, and complexity that's manageable.
 
@@ -345,7 +344,7 @@ This represents the kind of human-centered design that enterprise data platforms
 ✅ **BI Integrations** - Looker and Tableau export tools  
 ✅ **Enhanced Trust Scoring** - Weighted algorithm with time-decay and trends  
 ✅ **Mermaid Diagrams** - Modern visualizations for documentation  
-✅ **Test Suite** - 35+ tests with pytest and 90%+ coverage
+✅ **Test Suite** - 34 pytest tests, run in CI
 
 See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) for complete technical details.
 

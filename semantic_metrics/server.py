@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Semantic Metrics Modeling Assistant - MCP Server
 
@@ -880,14 +880,14 @@ def export_to_looker(metric_name: str, view_name: str, explore: str = "") -> str
     metric_id = metric_name.lower().replace(" ", "_")
     
     if metric_id not in METRICS_STORE:
-        return f" Metric ''{metric_name}'' not found."
+        return f" Metric '{metric_name}' not found."
     
     metric = METRICS_STORE[metric_id]
     lookml = generate_lookml(metric, view_name, explore if explore else None)
     
     report = f"""
- Looker LookML Export for: {metric[''name'']}
-{''='' * 50}
+ Looker LookML Export for: {metric['name']}
+{'=' * 50}
 
 ```lookml
 {lookml}
@@ -900,7 +900,7 @@ def export_to_looker(metric_name: str, view_name: str, explore: str = "") -> str
 4. Deploy to production
 
  Trust Score: {_calculate_trust_score(metric)}/100
-{''ℹ '' if metric[''owner''] else '' Assign an owner before deploying''}
+{'ℹ ' if metric['owner'] else ' Assign an owner before deploying'}
 """
     
     return report
@@ -923,14 +923,14 @@ def export_to_tableau(metric_name: str, connection: str) -> str:
     metric_id = metric_name.lower().replace(" ", "_")
     
     if metric_id not in METRICS_STORE:
-        return f" Metric ''{metric_name}'' not found."
+        return f" Metric '{metric_name}' not found."
     
     metric = METRICS_STORE[metric_id]
     tds = generate_tds(metric, connection)
     
     report = f"""
- Tableau TDS Export for: {metric[''name'']}
-{''='' * 50}
+ Tableau TDS Export for: {metric['name']}
+{'=' * 50}
 
 ```xml
 {tds}
@@ -943,7 +943,7 @@ def export_to_tableau(metric_name: str, connection: str) -> str:
 4. Select your saved .tds file
 
  Trust Score: {_calculate_trust_score(metric)}/100
-{''ℹ '' if metric[''owner''] else '' Assign an owner before sharing''}
+{'ℹ ' if metric['owner'] else ' Assign an owner before sharing'}
 """
     
     return report
@@ -975,7 +975,7 @@ def calculate_trust_score_enhanced_tool(metric_name: str, show_history: bool = F
     metric_id = metric_name.lower().replace(" ", "_")
     
     if metric_id not in METRICS_STORE:
-        return f" Metric ''{metric_name}'' not found."
+        return f" Metric '{metric_name}' not found."
     
     metric = METRICS_STORE[metric_id]
     
@@ -988,30 +988,30 @@ def calculate_trust_score_enhanced_tool(metric_name: str, show_history: bool = F
     
     # Build report
     report = f"""
- Enhanced Trust Score for: {metric[''name'']}
-{''='' * 60}
+ Enhanced Trust Score for: {metric['name']}
+{'=' * 60}
 
-Overall Score: {get_score_emoji(score_data[''score''])} {score_data[''score'']}/100 {score_data[''trend'']}
-Grade: {get_score_label(score_data[''score''])}
+Overall Score: {get_score_emoji(score_data['score'])} {score_data['score']}/100 {score_data['trend']}
+Grade: {get_score_label(score_data['score'])}
 
  Factor Breakdown (Weighted):
-   Tests:         {score_data[''breakdown''][''tests'']}/35  (35% weight - MOST IMPORTANT)
-   Usage:         {score_data[''breakdown''][''usage'']}/20  (20% weight)
-   Freshness:     {score_data[''breakdown''][''freshness'']}/15  (15% weight)
-   Documentation: {score_data[''breakdown''][''documentation'']}/15  (15% weight)
-   Ownership:     {score_data[''breakdown''][''ownership'']}/15  (15% weight)
+   Tests:         {score_data['breakdown']['tests']}/35  (35% weight - MOST IMPORTANT)
+   Usage:         {score_data['breakdown']['usage']}/20  (20% weight)
+   Freshness:     {score_data['breakdown']['freshness']}/15  (15% weight)
+   Documentation: {score_data['breakdown']['documentation']}/15  (15% weight)
+   Ownership:     {score_data['breakdown']['ownership']}/15  (15% weight)
 
  Multipliers Applied:
-  Recent Activity: {score_data[''multipliers''][''recent_activity'']:+.0f} points
-  Consistency:     {score_data[''multipliers''][''consistency'']:+.0f} points
-  Time Decay:      {score_data[''multipliers''][''time_decay'']:.1f} points
+  Recent Activity: {score_data['multipliers']['recent_activity']:+.0f} points
+  Consistency:     {score_data['multipliers']['consistency']:+.0f} points
+  Time Decay:      {score_data['multipliers']['time_decay']:.1f} points
 """
     
     # Show history if requested
     if show_history:
         trust_history = db.get_trust_score_history(metric_id, days=90)
         if trust_history and len(trust_history) >= 2:
-            scores = [h[''score''] for h in trust_history]
+            scores = [h['score'] for h in trust_history]
             report += f"""
  Trust Score Trend (90 days):
   {generate_sparkline(scores[:30])}
@@ -1022,13 +1022,13 @@ Grade: {get_score_label(score_data[''score''])}
             report += "\n Trust Score Trend: Not enough history data yet\n"
     
     # Add recommendations
-    if score_data[''recommendations'']:
+    if score_data['recommendations']:
         report += "\n Recommendations:\n"
-        for rec in score_data[''recommendations'']:
+        for rec in score_data['recommendations']:
             report += f"  {rec}\n"
     
     # Record this score
-    db.record_trust_score(metric_id, score_data[''score''], score_data[''breakdown''])
+    db.record_trust_score(metric_id, score_data['score'], score_data['breakdown'])
     db.close()
     
     return report
@@ -1055,7 +1055,7 @@ def generate_mermaid_diagram(metric_name: str, depth: int = 3, include_downstrea
     metric_id = metric_name.lower().replace(" ", "_")
     
     if metric_id not in METRICS_STORE:
-        return f" Metric ''{metric_name}'' not found."
+        return f" Metric '{metric_name}' not found."
     
     metric = METRICS_STORE[metric_id]
     
@@ -1074,28 +1074,28 @@ def generate_mermaid_diagram(metric_name: str, depth: int = 3, include_downstrea
             # Create sanitized node ID
             node_id = mid.replace(" ", "_").replace("-", "_")
             nodes[node_id] = {
-                ''label'': m[''name''],
-                ''type'': ''metric'',
-                ''is_root'': mid == metric_id
+                'label': m['name'],
+                'type': 'metric',
+                'is_root': mid == metric_id
             }
             
             # Add edges for dependencies
-            for dep in m.get(''dependencies'', []):
-                dep_id = dep.replace(" ", "_").replace("-", "_").split(''.'')[0]
+            for dep in m.get('dependencies', []):
+                dep_id = dep.replace(" ", "_").replace("-", "_").split('.')[0]
                 
                 # Determine if dependency is a table or metric
                 if dep_id in METRICS_STORE:
                     nodes[dep_id] = {
-                        ''label'': METRICS_STORE[dep_id][''name''],
-                        ''type'': ''metric'',
-                        ''is_root'': False
+                        'label': METRICS_STORE[dep_id]['name'],
+                        'type': 'metric',
+                        'is_root': False
                     }
                 else:
-                    # It''s a table/external source
+                    # It's a table/external source
                     nodes[dep_id] = {
-                        ''label'': dep,
-                        ''type'': ''table'',
-                        ''is_root'': False
+                        'label': dep,
+                        'type': 'table',
+                        'is_root': False
                     }
                 
                 edges.append((node_id, dep_id))
@@ -1110,12 +1110,12 @@ def generate_mermaid_diagram(metric_name: str, depth: int = 3, include_downstrea
     # Build downstream dependencies if requested
     if include_downstream:
         for mid, m in METRICS_STORE.items():
-            if metric_id in m.get(''dependencies'', []) or metric[''name''] in m.get(''dependencies'', []):
+            if metric_id in m.get('dependencies', []) or metric['name'] in m.get('dependencies', []):
                 node_id = mid.replace(" ", "_").replace("-", "_")
                 nodes[node_id] = {
-                    ''label'': m[''name''],
-                    ''type'': ''metric'',
-                    ''is_root'': False
+                    'label': m['name'],
+                    'type': 'metric',
+                    'is_root': False
                 }
                 edges.append((node_id, metric_id.replace(" ", "_").replace("-", "_")))
     
@@ -1124,8 +1124,8 @@ def generate_mermaid_diagram(metric_name: str, depth: int = 3, include_downstrea
     
     # Add nodes with labels
     for node_id, node_data in nodes.items():
-        label = node_data[''label'']
-        if node_data[''type''] == ''table'':
+        label = node_data['label']
+        if node_data['type'] == 'table':
             mermaid += f"    {node_id}[({label})]\n"  # Cylinder for tables
         else:
             mermaid += f"    {node_id}[{label}]\n"
@@ -1137,9 +1137,9 @@ def generate_mermaid_diagram(metric_name: str, depth: int = 3, include_downstrea
     # Add styling
     mermaid += "\n    %% Styling\n"
     for node_id, node_data in nodes.items():
-        if node_data[''is_root'']:
+        if node_data['is_root']:
             mermaid += f"    style {node_id} fill:#4CAF50,color:#fff\n"  # Green for root
-        elif node_data[''type''] == ''metric'':
+        elif node_data['type'] == 'metric':
             mermaid += f"    style {node_id} fill:#2196F3,color:#fff\n"  # Blue for metrics
         else:
             mermaid += f"    style {node_id} fill:#9E9E9E,color:#fff\n"  # Gray for tables
@@ -1147,8 +1147,8 @@ def generate_mermaid_diagram(metric_name: str, depth: int = 3, include_downstrea
     mermaid += "```\n"
     
     report = f"""
- Dependency Diagram for: {metric[''name'']}
-{''='' * 60}
+ Dependency Diagram for: {metric['name']}
+{'=' * 60}
 
 {mermaid}
 
