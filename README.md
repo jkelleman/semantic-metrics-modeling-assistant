@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/banner.png" alt="Metrics your team can trust: an MCP agent that defines a metric from a plain-language request and shows the weights behind its trust score."></p>
+
 # Semantic Metrics Modeling Assistant
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
